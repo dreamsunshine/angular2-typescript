@@ -1,0 +1,19 @@
+<div class="container">
+  <h1>表单</h1>
+  <form *ngIf="active" #siteForm="ngForm" (ngSubmit)="onSubmit()">
+    {{diagnostic}}
+    <div class="form-group">
+      <label for="name">网站名</label>
+      <input type="text" class="form-control" id="name" required name="name" type="text" [(ngModel)]="model.name" #name="ngModel">
+      <div [hidden]="name.valid||name.pristine" class="alert alert-danger">名是必须的</div>
+    </div>
+    <div class="form-group"><label for="alexa">alexa排名</label><input type="text" class="form-control" id="alexa" name="alexa" type="text" [(ngModel)]="model.alexa"></div>
+    <div class="form-group"><label for="url">url</label>
+    <select name="url" id="url" class="form-control" required [(ngModel)]="model.url">
+      <option *ngFor="let p of urls">{{p}}</option>
+    </select>
+    </div>
+    <button class="btn btn-default" type="submit" [disabled]="!siteForm.form.valid">提交</button>
+    <button class="btn btn-default" type="button" (click)="newSite()">添加网站</button>
+  </form>
+</div>
