@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var sites_1 = require("./sites");
+// import {SwApp} from "./switchng2/ngapp";
 var AppComponent = (function () {
     function AppComponent() {
         this.title = 'list';
@@ -26,4 +27,18 @@ AppComponent = __decorate([
     __metadata("design:paramtypes", [])
 ], AppComponent);
 exports.AppComponent = AppComponent;
+var SwApp = (function () {
+    function SwApp() {
+        this.todos = ['vue', 'ng2'];
+    }
+    return SwApp;
+}());
+SwApp = __decorate([
+    core_1.Component({
+        selector: 'app',
+        templateUrl: 'dist/swapp.html'
+    }),
+    __metadata("design:paramtypes", [])
+], SwApp);
+exports.SwApp = SwApp;
 //# sourceMappingURL=app.component.js.map

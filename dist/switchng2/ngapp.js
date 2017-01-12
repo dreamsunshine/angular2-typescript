@@ -10,37 +10,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
-var forms_1 = require("@angular/forms");
-var appCp = require("./app.component");
-var clickme_component_1 = require("./clickme.component");
-var form_component_1 = require("./form.component");
-var siteform_component_1 = require("./siteform.component");
-var AppModule = (function () {
-    function AppModule() {
+var platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
+var directive_1 = require("./directive");
+var SwApp = (function () {
+    function SwApp() {
+        this.isvalid = true;
+        this.todos = ['vue', 'ng2'];
+        this.tooltip = 'first declarations';
     }
-    return AppModule;
+    return SwApp;
 }());
-AppModule = __decorate([
-    core_1.NgModule({
-        imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
-        declarations: [appCp.AppComponent, clickme_component_1.clickmeComponent, form_component_1.FormComponent, siteform_component_1.siteformComponent],
-        bootstrap: [appCp.AppComponent]
+SwApp = __decorate([
+    core_1.Component({
+        selector: 'app',
+        templateUrl: 'dist/swapp.html',
+        styles: [
+            "\n      ul,li{\n        list-style:none\n      }\n      .completed{\n        text-decoration:line-through\n      }\n    "
+        ],
+        encapsulation: core_1.ViewEncapsulation.Emulated
     }),
     __metadata("design:paramtypes", [])
-], AppModule);
-exports.AppModule = AppModule;
+], SwApp);
+exports.SwApp = SwApp;
 var SwAppModule = (function () {
     function SwAppModule() {
+        this.title = 'swtitle';
     }
     return SwAppModule;
 }());
 SwAppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule],
-        declarations: [appCp.SwApp],
-        bootstrap: [appCp.SwApp]
+        providers: [directive_1.Overlay],
+        declarations: [SwApp, directive_1.Tooltip],
+        bootstrap: [SwApp]
     }),
     __metadata("design:paramtypes", [])
 ], SwAppModule);
 exports.SwAppModule = SwAppModule;
-//# sourceMappingURL=app.module.js.map
+var platform = platform_browser_dynamic_1.platformBrowserDynamic();
+platform.bootstrapModule(SwAppModule);
+//# sourceMappingURL=ngapp.js.map

@@ -1,23 +1,42 @@
 /* Master Styles */
+
 h1 {
-  color: #369;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 250%;
+    color: #369;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 250%;
 }
-h2, h3 {
-  color: #444;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: lighter;
+
+h2,
+h3 {
+    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
 }
+
 body {
-  margin: 2em;
+    margin: 2em;
 }
 
-
-.ng-valid[required], .ng-valid.required  {
-  border-left: 5px solid #42A948; /* green */
+.ng-valid[required],
+.ng-valid.required {
+    border-left: 5px solid #42A948;
+    /* green */
 }
- 
-.ng-invalid:not(form)  {
-  border-left: 5px solid #a94442; /* red */
+
+.ng-invalid:not(form) {
+    border-left: 5px solid #a94442;
+    /* red */
+}
+
+.tooltips {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    background-color: red;
+}
+
+.tip {
+    position: absolute;
+    background: #000;
+    color: #fff;
 }
