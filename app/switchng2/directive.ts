@@ -43,6 +43,7 @@ export class Tooltip{
   tooltip:string;
   constructor(private el:ElementRef,private overlay:Overlay){
     this.overlay.attach(el.nativeElement);
+    el.nativeElement.hidden=true;
   }
   @HostListener('mouseenter')
   onMouseEnter(){

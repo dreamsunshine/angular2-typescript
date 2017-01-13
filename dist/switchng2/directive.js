@@ -49,6 +49,7 @@ var Tooltip = (function () {
         this.overlay = overlay;
         this.defaultTip = 'ddd';
         this.overlay.attach(el.nativeElement);
+        el.nativeElement.hidden = true;
     }
     Object.defineProperty(Tooltip.prototype, "defaulttip", {
         set: function (name) {

@@ -1,5 +1,11 @@
 <div>todolist</div>
+  <!--<div>Add new item:<input [(ngModel)]="additem" type="text" /><button (click)="addTodo(additem); additem=''">add item</button></div>
     <ul>
-        <li *ngFor="let todo of todos">{{todo}}</li>
-    </ul>
+        <li *ngFor="let todo of todos; let index=index" [class.completed]="todo.completed">
+          <input type="checkbox" [checked]="todo.completed" (change)="toggleComplete(index)" />
+          {{todo.label}}
+        </li>
+    </ul>-->
+    <div>Add new item:<text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)"></text-input></div>
+    <todo-list [todos]="todos" (toggle)="toggleComplete($event)"></todo-list>
 <div class="tooltips"  [asTooltip]="tooltip" [defaulttip]="first" ></div>
