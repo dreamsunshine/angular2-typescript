@@ -6,6 +6,12 @@
           {{todo.label}}
         </li>
     </ul>-->
-    <div>Add new item:<text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)"></text-input></div>
+    <div><text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)">Add new item:</text-input></div>
     <todo-list [todos]="todos" (toggle)="toggleComplete($event)"></todo-list>
 <div class="tooltips"  [asTooltip]="tooltip" [defaulttip]="first" ></div>
+
+<div>tabs demo(viewchild&&contentchild)</div>
+<tabs (changed)="tabChanged($event)">
+  <tab title="tab 1">Content 1</tab>
+  <tab title="tab 2">Content 2</tab>
+</tabs>

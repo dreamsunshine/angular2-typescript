@@ -1,4 +1,4 @@
-import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter} from "@angular/core";
+import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
@@ -13,6 +13,8 @@ interface Todo{
 @Component({
   selector:'text-input',
   template:`
+    <!-- 内容投影 -->
+    <ng-content></ng-content>
     <input [(ngModel)]="additem" [placeholder]="inputPlaceholder" type="text" /><button (click)="emitText(additem); additem=''">{{buttonLabel}}</button>
     `
 })
@@ -43,6 +45,78 @@ class TodoList{
     this.toggle.emit(index);
   }
 }
+// tabs demo
+@Component({
+  selector:'tab',
+  template:'<div [hidden]="!isActive"><ng-content></ng-content></div>'
+})
+class Tab{
+  isActive:boolean;
+  @Input()
+  public title:string;
+  constructor(@Inject(forwardRef(()=>Tabs)) @Host() private tabs:Tabs){
+    this.tabs.addTab(this);
+  }
+}
+@Component({
+  selector:'tabs',
+  styles: [
+    `
+      .tab {
+        display: inline-block;
+      }
+      .tab-header {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .tab-header .is-active {
+        background-color: #eee;
+      }
+      .tab-header li {
+        display: inline-block;
+        cursor: pointer;
+        padding: 5px;
+        border: 1px solid #ccc;
+      }
+      .tab-content {
+        border: 1px solid #ccc;
+        border-top: none;
+        padding: 5px;
+      }
+    `
+  ],
+  template:`
+    <div class="tab">
+      <ul class="tab-header">
+        <li *ngFor="let tab of tabs;let index=index" [class.is-active]="active==index" (click)="select(index)">{{tab.title}}</li>
+      </ul>
+      <div class="tab-content"><ng-content></ng-content></div>
+    </div>
+  `
+})
+class Tabs{
+  @Output('changed') private tabChanged:EventEmitter<Tab>=new EventEmitter<Tab>();
+  private tabs:Tab[];
+  private active:number;
+  constructor(){
+    this.tabs=[];
+    this.active=0;
+  }
+  addTab(tab:Tab){
+    if(this.tabs.length==this.active){
+      tab.isActive=true;
+    }
+    this.tabs.push(tab);
+  }
+  select(index){
+    this.tabs[this.active].isActive=false;
+    this.active=index;
+    this.tabs[index].isActive=true;
+    this.tabChanged.emit(this.tabs[index]);
+  }
+}
+
 @Component({
   selector:'app',
   templateUrl:'dist/swapp.html',
@@ -58,7 +132,6 @@ class TodoList{
   ],
   encapsulation:ViewEncapsulation.Emulated
 })
-
 export class SwApp {
   isvalid=true;
   public todos:Todo[];
@@ -73,12 +146,15 @@ export class SwApp {
   addTodo(value){
     this.todos.push({label:value,completed:false})
   }
+  tabChanged(tab){
+    console.log(tab)
+  }
 }
 
 @NgModule({
   imports:[BrowserModule,FormsModule],
   providers:[Overlay],
-  declarations:[SwApp,Tooltip,TodoList,InputBox],
+  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab],
   bootstrap:[SwApp]
 })
 export class SwAppModule{

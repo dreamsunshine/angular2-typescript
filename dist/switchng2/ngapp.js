@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var platform_browser_1 = require("@angular/platform-browser");
@@ -37,7 +40,7 @@ __decorate([
 InputBox = __decorate([
     core_1.Component({
         selector: 'text-input',
-        template: "\n    <input [(ngModel)]=\"additem\" [placeholder]=\"inputPlaceholder\" type=\"text\" /><button (click)=\"emitText(additem); additem=''\">{{buttonLabel}}</button>\n    "
+        template: "\n    <!-- \u5185\u5BB9\u6295\u5F71 -->\n    <ng-content></ng-content>\n    <input [(ngModel)]=\"additem\" [placeholder]=\"inputPlaceholder\" type=\"text\" /><button (click)=\"emitText(additem); additem=''\">{{buttonLabel}}</button>\n    "
     }),
     __metadata("design:paramtypes", [])
 ], InputBox);
@@ -65,6 +68,60 @@ TodoList = __decorate([
     }),
     __metadata("design:paramtypes", [])
 ], TodoList);
+// tabs demo
+var Tab = (function () {
+    function Tab(tabs) {
+        this.tabs = tabs;
+        this.tabs.addTab(this);
+    }
+    return Tab;
+}());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], Tab.prototype, "title", void 0);
+Tab = __decorate([
+    core_1.Component({
+        selector: 'tab',
+        template: '<div [hidden]="!isActive"><ng-content></ng-content></div>'
+    }),
+    __param(0, core_1.Inject(core_1.forwardRef(function () { return Tabs; }))), __param(0, core_1.Host()),
+    __metadata("design:paramtypes", [Tabs])
+], Tab);
+var Tabs = (function () {
+    function Tabs() {
+        this.tabChanged = new core_1.EventEmitter();
+        this.tabs = [];
+        this.active = 0;
+    }
+    Tabs.prototype.addTab = function (tab) {
+        if (this.tabs.length == this.active) {
+            tab.isActive = true;
+        }
+        this.tabs.push(tab);
+    };
+    Tabs.prototype.select = function (index) {
+        this.tabs[this.active].isActive = false;
+        this.active = index;
+        this.tabs[index].isActive = true;
+        this.tabChanged.emit(this.tabs[index]);
+    };
+    return Tabs;
+}());
+__decorate([
+    core_1.Output('changed'),
+    __metadata("design:type", core_1.EventEmitter)
+], Tabs.prototype, "tabChanged", void 0);
+Tabs = __decorate([
+    core_1.Component({
+        selector: 'tabs',
+        styles: [
+            "\n      .tab {\n        display: inline-block;\n      }\n      .tab-header {\n        list-style: none;\n        padding: 0;\n        margin: 0;\n      }\n      .tab-header .is-active {\n        background-color: #eee;\n      }\n      .tab-header li {\n        display: inline-block;\n        cursor: pointer;\n        padding: 5px;\n        border: 1px solid #ccc;\n      }\n      .tab-content {\n        border: 1px solid #ccc;\n        border-top: none;\n        padding: 5px;\n      }\n    "
+        ],
+        template: "\n    <div class=\"tab\">\n      <ul class=\"tab-header\">\n        <li *ngFor=\"let tab of tabs;let index=index\" [class.is-active]=\"active==index\" (click)=\"select(index)\">{{tab.title}}</li>\n      </ul>\n      <div class=\"tab-content\"><ng-content></ng-content></div>\n    </div>\n  "
+    }),
+    __metadata("design:paramtypes", [])
+], Tabs);
 var SwApp = (function () {
     function SwApp() {
         this.isvalid = true;
@@ -76,6 +133,9 @@ var SwApp = (function () {
     };
     SwApp.prototype.addTodo = function (value) {
         this.todos.push({ label: value, completed: false });
+    };
+    SwApp.prototype.tabChanged = function (tab) {
+        console.log(tab);
     };
     return SwApp;
 }());
@@ -101,7 +161,7 @@ SwAppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
         providers: [directive_1.Overlay],
-        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox],
+        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab],
         bootstrap: [SwApp]
     }),
     __metadata("design:paramtypes", [])
