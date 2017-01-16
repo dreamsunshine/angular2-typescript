@@ -5,6 +5,11 @@ import {Site} from './sites';
 @Component({
   selector:'my-app',
   template:`
+    <div>
+      <ul>
+        <li *ngFor="let link of links"><a href="{{link.href}}">{{link.name}}</a></li>
+      </ul>
+    </div>
     <h1>{{title}}</h1>
     <h2>my love:{{mysite}}</h2>
     <p>列表</p>
@@ -20,6 +25,7 @@ export class AppComponent{
   title='list';
   mysite='something';
   sites=[new Site(1,'google'),new Site(1,'bing'),new Site(1,'baidu')]
+  links=[{href:'/',name:'首页'},{href:'/app.html',name:'app'}]
 }
 
 @Component({

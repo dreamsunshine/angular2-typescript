@@ -1,4 +1,4 @@
-import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host} from "@angular/core";
+import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,QueryList,AfterContentInit} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
@@ -116,6 +116,94 @@ class Tabs{
     this.tabChanged.emit(this.tabs[index]);
   }
 }
+// tab分组件
+// tab标题
+@Component({
+  selector:'tab-title',
+  styles:[`
+    .tab-title {
+      display: inline-block;
+      cursor: pointer;
+      padding: 5px;
+      border: 1px solid #ccc;
+    }
+  `],
+  template:`
+    <div class='tab-title' (click)="handleClick()"><ng-content></ng-content></div>
+  `
+})
+class TabTitle{
+  @Output('selected') tabSelected:EventEmitter<TabTitle>=new EventEmitter<TabTitle>();
+  handleClick(){
+    this.tabSelected.emit(this);
+  }
+}
+// tab内容
+@Component({
+  selector:'tab-content',
+  styles:[`
+    .tab-content{
+      border: 1px solid #ccc;
+      border-top: none;
+      padding: 5px;
+    }
+  `],
+  template:`
+    <div class="tab-content" [hidden]="!isActive">
+      <ng-content></ng-content>
+    </div>
+  `
+})
+class TabContent{
+  isActive:boolean=false;
+}
+// tab主体
+@Component({
+  selector:'tabs-main',
+  styles:[`
+    .tab {
+        display: inline-block;
+      }
+      .tab-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+  `],
+  template:`
+    <div class="tab">
+      <div class="tab-nav">
+        <ng-content select="tab-title"></ng-content>
+      </div>
+      <ng-content select="tab-content"></ng-content>
+    </div>
+  `
+})
+class TabsMain implements AfterContentInit{
+  @Output('tabChange') tabChange:EventEmitter<number>=new EventEmitter<number>();
+  @ContentChildren(TabTitle) tabTitles:QueryList<TabTitle>;
+  @ContentChildren(TabContent) tabContents:QueryList<TabContent>;
+
+  active:number;
+  select(index:number){
+    let contents:TabContent[]=this.tabContents.toArray();
+    contents[this.active].isActive=false;
+    this.active=index;
+    contents[this.active].isActive=true;
+    this.tabChange.emit(index);
+  }
+  ngAfterContentInit(){
+    this.tabTitles
+      .map(t=>t.tabSelected)
+      .forEach((t,i)=>{
+        t.subscribe(_=>{
+          this.select(i);
+        })
+      });
+    this.active=0;
+    this.select(0);
+  }
+}
 
 @Component({
   selector:'app',
@@ -149,12 +237,15 @@ export class SwApp {
   tabChanged(tab){
     console.log(tab)
   }
+  tabChange(index:number){
+    console.log(index);
+  }
 }
 
 @NgModule({
   imports:[BrowserModule,FormsModule],
   providers:[Overlay],
-  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab],
+  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab,TabsMain,TabContent,TabTitle],
   bootstrap:[SwApp]
 })
 export class SwAppModule{

@@ -122,6 +122,90 @@ Tabs = __decorate([
     }),
     __metadata("design:paramtypes", [])
 ], Tabs);
+// tab分组件
+// tab标题
+var TabTitle = (function () {
+    function TabTitle() {
+        this.tabSelected = new core_1.EventEmitter();
+    }
+    TabTitle.prototype.handleClick = function () {
+        this.tabSelected.emit(this);
+    };
+    return TabTitle;
+}());
+__decorate([
+    core_1.Output('selected'),
+    __metadata("design:type", core_1.EventEmitter)
+], TabTitle.prototype, "tabSelected", void 0);
+TabTitle = __decorate([
+    core_1.Component({
+        selector: 'tab-title',
+        styles: ["\n    .tab-title {\n      display: inline-block;\n      cursor: pointer;\n      padding: 5px;\n      border: 1px solid #ccc;\n    }\n  "],
+        template: "\n    <div class='tab-title' (click)=\"handleClick()\"><ng-content></ng-content></div>\n  "
+    }),
+    __metadata("design:paramtypes", [])
+], TabTitle);
+// tab内容
+var TabContent = (function () {
+    function TabContent() {
+        this.isActive = false;
+    }
+    return TabContent;
+}());
+TabContent = __decorate([
+    core_1.Component({
+        selector: 'tab-content',
+        styles: ["\n    .tab-content{\n      border: 1px solid #ccc;\n      border-top: none;\n      padding: 5px;\n    }\n  "],
+        template: "\n    <div class=\"tab-content\" [hidden]=\"!isActive\">\n      <ng-content></ng-content>\n    </div>\n  "
+    }),
+    __metadata("design:paramtypes", [])
+], TabContent);
+// tab主体
+var TabsMain = (function () {
+    function TabsMain() {
+        this.tabChange = new core_1.EventEmitter();
+    }
+    TabsMain.prototype.select = function (index) {
+        var contents = this.tabContents.toArray();
+        contents[this.active].isActive = false;
+        this.active = index;
+        contents[this.active].isActive = true;
+        this.tabChange.emit(index);
+    };
+    TabsMain.prototype.ngAfterContentInit = function () {
+        var _this = this;
+        this.tabTitles
+            .map(function (t) { return t.tabSelected; })
+            .forEach(function (t, i) {
+            t.subscribe(function (_) {
+                _this.select(i);
+            });
+        });
+        this.active = 0;
+        this.select(0);
+    };
+    return TabsMain;
+}());
+__decorate([
+    core_1.Output('tabChange'),
+    __metadata("design:type", core_1.EventEmitter)
+], TabsMain.prototype, "tabChange", void 0);
+__decorate([
+    core_1.ContentChildren(TabTitle),
+    __metadata("design:type", core_1.QueryList)
+], TabsMain.prototype, "tabTitles", void 0);
+__decorate([
+    core_1.ContentChildren(TabContent),
+    __metadata("design:type", core_1.QueryList)
+], TabsMain.prototype, "tabContents", void 0);
+TabsMain = __decorate([
+    core_1.Component({
+        selector: 'tabs-main',
+        styles: ["\n    .tab {\n        display: inline-block;\n      }\n      .tab-nav {\n        list-style: none;\n        padding: 0;\n        margin: 0;\n      }\n  "],
+        template: "\n    <div class=\"tab\">\n      <div class=\"tab-nav\">\n        <ng-content select=\"tab-title\"></ng-content>\n      </div>\n      <ng-content select=\"tab-content\"></ng-content>\n    </div>\n  "
+    }),
+    __metadata("design:paramtypes", [])
+], TabsMain);
 var SwApp = (function () {
     function SwApp() {
         this.isvalid = true;
@@ -136,6 +220,9 @@ var SwApp = (function () {
     };
     SwApp.prototype.tabChanged = function (tab) {
         console.log(tab);
+    };
+    SwApp.prototype.tabChange = function (index) {
+        console.log(index);
     };
     return SwApp;
 }());
@@ -161,7 +248,7 @@ SwAppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
         providers: [directive_1.Overlay],
-        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab],
+        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab, TabsMain, TabContent, TabTitle],
         bootstrap: [SwApp]
     }),
     __metadata("design:paramtypes", [])

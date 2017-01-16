@@ -16,13 +16,14 @@ var AppComponent = (function () {
         this.title = 'list';
         this.mysite = 'something';
         this.sites = [new sites_1.Site(1, 'google'), new sites_1.Site(1, 'bing'), new sites_1.Site(1, 'baidu')];
+        this.links = [{ href: '/', name: '首页' }, { href: '/app.html', name: 'app' }];
     }
     return AppComponent;
 }());
 AppComponent = __decorate([
     core_1.Component({
         selector: 'my-app',
-        template: "\n    <h1>{{title}}</h1>\n    <h2>my love:{{mysite}}</h2>\n    <p>\u5217\u8868</p>\n    <ul>\n      <li *ngFor=\"let site of sites\">{{site.name}}</li>\n    </ul>\n    <click-me></click-me>\n    <ss-form></ss-form> \n  "
+        template: "\n    <div>\n      <ul>\n        <li *ngFor=\"let link of links\"><a href=\"{{link.href}}\">{{link.name}}</a></li>\n      </ul>\n    </div>\n    <h1>{{title}}</h1>\n    <h2>my love:{{mysite}}</h2>\n    <p>\u5217\u8868</p>\n    <ul>\n      <li *ngFor=\"let site of sites\">{{site.name}}</li>\n    </ul>\n    <click-me></click-me>\n    <ss-form></ss-form> \n  "
     }),
     __metadata("design:paramtypes", [])
 ], AppComponent);
