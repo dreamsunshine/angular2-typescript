@@ -1,9 +1,10 @@
-import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,QueryList,AfterContentInit} from "@angular/core";
+import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,ContentChild,QueryList,AfterContentInit,TemplateRef} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 
 import {Tooltip,Overlay} from "./directive";
+
 
 interface Todo{
   completed:boolean;
@@ -26,25 +27,51 @@ class InputBox{
     this.inputText.emit(text);
   }
 }
-
+// template标签引用
 @Component({
   selector:'todo-list',
   template:`
     <ul>
-        <li *ngFor="let todo of todos; let index=index" [class.completed]="todo.completed">
+        <!-- <li *ngFor="let todo of todos; let index=index" [class.completed]="todo.completed">
           <input type="checkbox" [checked]="todo.completed" (change)="toggleComplete(index)" />
           {{todo.label}}
-        </li>
+        </li> -->
+        <template *ngFor="let todo of todos; template:itemsTemplate"></template>
     </ul>
   `
 })
 class TodoList{
   @Input() todos:Todo[];
-  @Output() toggle=new EventEmitter<number>();
-  toggleComplete(index:number){
-    this.toggle.emit(index);
+  @Input() itemsTemplate:TemplateRef<any>;
+  @Output() toggle=new EventEmitter<Todo>();
+  // toggleComplete(index:number){
+  //   this.toggle.emit(index);
+  // }
+}
+@Component({
+  selector:'todo-app',
+  template:`
+    <div><text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)">Add new item:</text-input></div>
+    <todo-list [todos]="todos" (toggle)="toggleComplete($event)" [itemsTemplate]="itemsTemplate"></todo-list>
+  `
+})
+class TodoApp{
+  public todos:Todo[];
+  constructor(){
+    this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}];
+  }
+  @ContentChild(TemplateRef) private itemsTemplate:TemplateRef<any>;
+  @ViewChildren(TodoList) todoLists:QueryList<TodoList>;
+  toggleComplete(todo){
+    
+    todo.completed=!todo.completed
+  }
+  addTodo(value){
+    this.todos.push({label:value,completed:false})
   }
 }
+
+
 // tabs demo
 @Component({
   selector:'tab',
@@ -222,30 +249,33 @@ class TabsMain implements AfterContentInit{
 })
 export class SwApp {
   isvalid=true;
-  public todos:Todo[];
+  // public todos:Todo[];
   public tooltip:string;
   constructor(){
-    this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}]
+    // this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}]
     this.tooltip='first declarations';
   }
-  toggleComplete(index){
-    this.todos[index].completed=!this.todos[index].completed
+  toggleComplete(todo:Todo){
+    // this.todos[index].completed=!this.todos[index].completed
+    todo.completed=!todo.completed;
+    console.log('todo',todo);
+    
   }
-  addTodo(value){
-    this.todos.push({label:value,completed:false})
-  }
+  // addTodo(value){
+  //   this.todos.push({label:value,completed:false})
+  // }
   tabChanged(tab){
     console.log(tab)
   }
   tabChange(index:number){
-    console.log(index);
+    // console.log(index);
   }
 }
 
 @NgModule({
   imports:[BrowserModule,FormsModule],
   providers:[Overlay],
-  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab,TabsMain,TabContent,TabTitle],
+  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab,TabsMain,TabContent,TabTitle,TodoApp],
   bootstrap:[SwApp]
 })
 export class SwAppModule{

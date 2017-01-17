@@ -13,7 +13,7 @@ import {siteformComponent} from "./siteform.component";
 
 @NgModule({
   imports:[BrowserModule,FormsModule],
-  declarations:[appCp.AppComponent,clickmeComponent,FormComponent,siteformComponent],
+  declarations:[appCp.AppComponent,clickmeComponent,FormComponent,siteformComponent,appCp.panel],
   bootstrap:[appCp.AppComponent]
 })
 

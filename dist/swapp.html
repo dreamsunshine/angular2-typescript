@@ -6,8 +6,16 @@
           {{todo.label}}
         </li>
     </ul>-->
-    <div><text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)">Add new item:</text-input></div>
-    <todo-list [todos]="todos" (toggle)="toggleComplete($event)"></todo-list>
+    <!--<div><text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)">Add new item:</text-input></div>
+    <todo-list [todos]="todos" (toggle)="toggleComplete($event)"></todo-list>-->
+    <todo-app>
+      <template let-todo>
+        <li>
+          <input type="checkbox" [checked]="todo.completed" (change)="toggleComplete(todo)" />
+          <span [class.completed]="todo.completed">{{todo.label}}</span>
+        </li>
+      </template>
+    </todo-app>
 <div class="tooltips"  [asTooltip]="tooltip" [defaulttip]="first" ></div>
 
 <div>tabs demo(viewchild&&contentchild)</div>

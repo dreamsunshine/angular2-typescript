@@ -44,13 +44,14 @@ InputBox = __decorate([
     }),
     __metadata("design:paramtypes", [])
 ], InputBox);
+// template标签引用
 var TodoList = (function () {
     function TodoList() {
         this.toggle = new core_1.EventEmitter();
+        // toggleComplete(index:number){
+        //   this.toggle.emit(index);
+        // }
     }
-    TodoList.prototype.toggleComplete = function (index) {
-        this.toggle.emit(index);
-    };
     return TodoList;
 }());
 __decorate([
@@ -58,16 +59,47 @@ __decorate([
     __metadata("design:type", Array)
 ], TodoList.prototype, "todos", void 0);
 __decorate([
+    core_1.Input(),
+    __metadata("design:type", core_1.TemplateRef)
+], TodoList.prototype, "itemsTemplate", void 0);
+__decorate([
     core_1.Output(),
     __metadata("design:type", Object)
 ], TodoList.prototype, "toggle", void 0);
 TodoList = __decorate([
     core_1.Component({
         selector: 'todo-list',
-        template: "\n    <ul>\n        <li *ngFor=\"let todo of todos; let index=index\" [class.completed]=\"todo.completed\">\n          <input type=\"checkbox\" [checked]=\"todo.completed\" (change)=\"toggleComplete(index)\" />\n          {{todo.label}}\n        </li>\n    </ul>\n  "
+        template: "\n    <ul>\n        <!-- <li *ngFor=\"let todo of todos; let index=index\" [class.completed]=\"todo.completed\">\n          <input type=\"checkbox\" [checked]=\"todo.completed\" (change)=\"toggleComplete(index)\" />\n          {{todo.label}}\n        </li> -->\n        <template *ngFor=\"let todo of todos; template:itemsTemplate\"></template>\n    </ul>\n  "
     }),
     __metadata("design:paramtypes", [])
 ], TodoList);
+var TodoApp = (function () {
+    function TodoApp() {
+        this.todos = [{ label: 'buy milk', completed: false }, { label: 'do sth', completed: true }];
+    }
+    TodoApp.prototype.toggleComplete = function (todo) {
+        todo.completed = !todo.completed;
+    };
+    TodoApp.prototype.addTodo = function (value) {
+        this.todos.push({ label: value, completed: false });
+    };
+    return TodoApp;
+}());
+__decorate([
+    core_1.ContentChild(core_1.TemplateRef),
+    __metadata("design:type", core_1.TemplateRef)
+], TodoApp.prototype, "itemsTemplate", void 0);
+__decorate([
+    core_1.ViewChildren(TodoList),
+    __metadata("design:type", core_1.QueryList)
+], TodoApp.prototype, "todoLists", void 0);
+TodoApp = __decorate([
+    core_1.Component({
+        selector: 'todo-app',
+        template: "\n    <div><text-input inputPlaceholder=\"New todo...\" buttonLabel=\"Add\" (inputText)=\"addTodo($event)\">Add new item:</text-input></div>\n    <todo-list [todos]=\"todos\" (toggle)=\"toggleComplete($event)\" [itemsTemplate]=\"itemsTemplate\"></todo-list>\n  "
+    }),
+    __metadata("design:paramtypes", [])
+], TodoApp);
 // tabs demo
 var Tab = (function () {
     function Tab(tabs) {
@@ -209,20 +241,22 @@ TabsMain = __decorate([
 var SwApp = (function () {
     function SwApp() {
         this.isvalid = true;
-        this.todos = [{ label: 'buy milk', completed: false }, { label: 'do sth', completed: true }];
+        // this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}]
         this.tooltip = 'first declarations';
     }
-    SwApp.prototype.toggleComplete = function (index) {
-        this.todos[index].completed = !this.todos[index].completed;
+    SwApp.prototype.toggleComplete = function (todo) {
+        // this.todos[index].completed=!this.todos[index].completed
+        todo.completed = !todo.completed;
+        console.log('todo', todo);
     };
-    SwApp.prototype.addTodo = function (value) {
-        this.todos.push({ label: value, completed: false });
-    };
+    // addTodo(value){
+    //   this.todos.push({label:value,completed:false})
+    // }
     SwApp.prototype.tabChanged = function (tab) {
         console.log(tab);
     };
     SwApp.prototype.tabChange = function (index) {
-        console.log(index);
+        // console.log(index);
     };
     return SwApp;
 }());
@@ -248,7 +282,7 @@ SwAppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
         providers: [directive_1.Overlay],
-        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab, TabsMain, TabContent, TabTitle],
+        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab, TabsMain, TabContent, TabTitle, TodoApp],
         bootstrap: [SwApp]
     }),
     __metadata("design:paramtypes", [])
