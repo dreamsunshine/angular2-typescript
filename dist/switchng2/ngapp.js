@@ -1,3 +1,4 @@
+/// <reference path="../../node_modules/immutable/dist/immutable.d.ts" />
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -16,12 +17,16 @@ var forms_1 = require("@angular/forms");
 var platform_browser_1 = require("@angular/platform-browser");
 var platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
 var directive_1 = require("./directive");
+var immutable_1 = require("immutable");
 var InputBox = (function () {
     function InputBox() {
         this.inputText = new core_1.EventEmitter();
     }
     InputBox.prototype.emitText = function (text) {
         this.inputText.emit(text);
+    };
+    InputBox.prototype.ngDoCheck = function () {
+        console.log('Change detection run in the InputBox component');
     };
     return InputBox;
 }());
@@ -48,15 +53,18 @@ InputBox = __decorate([
 var TodoList = (function () {
     function TodoList() {
         this.toggle = new core_1.EventEmitter();
-        // toggleComplete(index:number){
-        //   this.toggle.emit(index);
-        // }
     }
+    // toggleComplete(index:number){
+    //   this.toggle.emit(index);
+    // }
+    TodoList.prototype.ngDoCheck = function () {
+        console.log('Change detection run in the TodoList component');
+    };
     return TodoList;
 }());
 __decorate([
     core_1.Input(),
-    __metadata("design:type", Array)
+    __metadata("design:type", Object)
 ], TodoList.prototype, "todos", void 0);
 __decorate([
     core_1.Input(),
@@ -74,14 +82,31 @@ TodoList = __decorate([
     __metadata("design:paramtypes", [])
 ], TodoList);
 var TodoApp = (function () {
+    // public todos:Todo[];
     function TodoApp() {
-        this.todos = [{ label: 'buy milk', completed: false }, { label: 'do sth', completed: true }];
+        // this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}];
+        this.todos = immutable_1.List.of({
+            label: 'buy milk', completed: false
+        }, {
+            label: 'do sth', completed: true
+        });
     }
     TodoApp.prototype.toggleComplete = function (todo) {
-        todo.completed = !todo.completed;
+        // todo.completed=!todo.completed
+        this.todos = todo.updateIn(this.todos, function (todo) {
+            var newTodo = {
+                label: todo.label,
+                completed: !todo.completed
+            };
+            return newTodo;
+        });
+        console.log(this.todos);
     };
     TodoApp.prototype.addTodo = function (value) {
-        this.todos.push({ label: value, completed: false });
+        this.todos = this.todos.push({ label: value, completed: false });
+    };
+    TodoApp.prototype.ngDoCheck = function () {
+        console.log('Change detection run in the TodoApp component');
     };
     return TodoApp;
 }());
@@ -96,7 +121,8 @@ __decorate([
 TodoApp = __decorate([
     core_1.Component({
         selector: 'todo-app',
-        template: "\n    <div><text-input inputPlaceholder=\"New todo...\" buttonLabel=\"Add\" (inputText)=\"addTodo($event)\">Add new item:</text-input></div>\n    <todo-list [todos]=\"todos\" (toggle)=\"toggleComplete($event)\" [itemsTemplate]=\"itemsTemplate\"></todo-list>\n  "
+        template: "\n    <div><text-input inputPlaceholder=\"New todo...\" buttonLabel=\"Add\" (inputText)=\"addTodo($event)\">Add new item:</text-input></div>\n    <todo-list [todos]=\"todos\" (toggle)=\"toggleComplete($event)\" [itemsTemplate]=\"itemsTemplate\"></todo-list>\n  ",
+        changeDetection: core_1.ChangeDetectionStrategy.OnPush
     }),
     __metadata("design:paramtypes", [])
 ], TodoApp);
@@ -248,6 +274,12 @@ var SwApp = (function () {
         // this.todos[index].completed=!this.todos[index].completed
         todo.completed = !todo.completed;
         console.log('todo', todo);
+        if (todo.completed) {
+            console.log('已置为已完成');
+        }
+        else {
+            console.log('已置为未完成');
+        }
     };
     // addTodo(value){
     //   this.todos.push({label:value,completed:false})
@@ -257,6 +289,9 @@ var SwApp = (function () {
     };
     SwApp.prototype.tabChange = function (index) {
         // console.log(index);
+    };
+    SwApp.prototype.ngDoCheck = function () {
+        console.log('Change detection run in the SwApp component');
     };
     return SwApp;
 }());

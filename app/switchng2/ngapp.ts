@@ -1,10 +1,13 @@
-import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,ContentChild,QueryList,AfterContentInit,TemplateRef} from "@angular/core";
+/// <reference path="../../node_modules/immutable/dist/immutable.d.ts" />
+
+
+import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,ContentChild,QueryList,AfterContentInit,TemplateRef,ChangeDetectionStrategy,DoCheck} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 
 import {Tooltip,Overlay} from "./directive";
-
+import {List as ImmutableList} from 'immutable';
 
 interface Todo{
   completed:boolean;
@@ -26,6 +29,9 @@ class InputBox{
   emitText(text:string){
     this.inputText.emit(text);
   }
+  ngDoCheck(){
+    console.log('Change detection run in the InputBox component');
+  }
 }
 // template标签引用
 @Component({
@@ -41,33 +47,55 @@ class InputBox{
   `
 })
 class TodoList{
-  @Input() todos:Todo[];
+  // @Input() todos:Todo[];
+  @Input() todos:ImmutableList<Todo>;
   @Input() itemsTemplate:TemplateRef<any>;
   @Output() toggle=new EventEmitter<Todo>();
   // toggleComplete(index:number){
   //   this.toggle.emit(index);
   // }
+  ngDoCheck() {
+    console.log('Change detection run in the TodoList component');
+  }
 }
 @Component({
   selector:'todo-app',
   template:`
     <div><text-input inputPlaceholder="New todo..." buttonLabel="Add" (inputText)="addTodo($event)">Add new item:</text-input></div>
     <todo-list [todos]="todos" (toggle)="toggleComplete($event)" [itemsTemplate]="itemsTemplate"></todo-list>
-  `
+  `,
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 class TodoApp{
-  public todos:Todo[];
+  // public todos:Todo[];
   constructor(){
-    this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}];
+    // this.todos =[{label:'buy milk',completed:false},{label:'do sth',completed:true}];
+    
   }
+  todos:ImmutableList<Todo>=ImmutableList.of({
+    label:'buy milk',completed:false
+  },{
+    label:'do sth',completed:true
+  });
   @ContentChild(TemplateRef) private itemsTemplate:TemplateRef<any>;
   @ViewChildren(TodoList) todoLists:QueryList<TodoList>;
   toggleComplete(todo){
     
-    todo.completed=!todo.completed
+    // todo.completed=!todo.completed
+    this.todos=todo.updateIn(this.todos,todo=>{
+      let newTodo={
+        label:todo.label,
+        completed:!todo.completed
+      };
+      return newTodo;
+    })
+    console.log(this.todos);
   }
   addTodo(value){
-    this.todos.push({label:value,completed:false})
+    this.todos=this.todos.push({label:value,completed:false})
+  }
+  ngDoCheck() {
+    console.log('Change detection run in the TodoApp component');
   }
 }
 
@@ -259,6 +287,11 @@ export class SwApp {
     // this.todos[index].completed=!this.todos[index].completed
     todo.completed=!todo.completed;
     console.log('todo',todo);
+    if(todo.completed){
+      console.log('已置为已完成')
+    }else{
+      console.log('已置为未完成')
+    }
     
   }
   // addTodo(value){
@@ -269,6 +302,9 @@ export class SwApp {
   }
   tabChange(index:number){
     // console.log(index);
+  }
+  ngDoCheck() {
+    console.log('Change detection run in the SwApp component');
   }
 }
 
