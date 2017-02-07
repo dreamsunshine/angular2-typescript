@@ -128,6 +128,7 @@ TodoApp = __decorate([
 ], TodoApp);
 // tabs demo
 var Tab = (function () {
+    // 前向引用
     function Tab(tabs) {
         this.tabs = tabs;
         this.tabs.addTab(this);

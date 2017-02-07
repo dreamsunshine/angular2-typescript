@@ -109,6 +109,7 @@ class Tab{
   isActive:boolean;
   @Input()
   public title:string;
+  // 前向引用
   constructor(@Inject(forwardRef(()=>Tabs)) @Host() private tabs:Tabs){
     this.tabs.addTab(this);
   }
