@@ -24,7 +24,9 @@
       // other libraries
       'rxjs':                       'npm:rxjs',
       'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
-      'immutable':'npm:immutable'
+      'immutable':'npm:immutable',
+      'markdown':'npm:markdown',
+      'util':'./util.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
@@ -41,6 +43,10 @@
       },
       immutable:{
         main:'./dist/immutable.js',
+        defaultExtension:'js'
+      },
+      markdown:{
+        main:'./lib/markdown.js',
         defaultExtension:'js'
       }
     }

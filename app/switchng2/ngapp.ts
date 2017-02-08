@@ -1,7 +1,7 @@
 /// <reference path="../../node_modules/immutable/dist/immutable.d.ts" />
 
-
-import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,ContentChild,QueryList,AfterContentInit,TemplateRef,ChangeDetectionStrategy,DoCheck} from "@angular/core";
+import * as markdown from 'markdown';
+import {Component,NgModule,ViewEncapsulation,Input,Output,EventEmitter,Inject,Directive,forwardRef,Host,Attribute,ContentChildren,ViewChildren,ContentChild,QueryList,AfterContentInit,TemplateRef,ChangeDetectionStrategy,DoCheck,ElementRef} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
@@ -261,6 +261,58 @@ class TabsMain implements AfterContentInit{
   }
 }
 
+// markdown
+class Markdown{
+  toHTML(md){
+    return markdown.toHTML(md);
+  }
+}
+@Component({
+  selector:'panel-title',
+  template:'<ng-content></ng-content>'
+})
+class paneltitle{
+  constructor(){}
+}
+@Component({
+  selector:'panel-content',
+  template:'<ng-content></ng-content>'
+})
+class panelcontent{
+  constructor(){}
+}
+
+@Component({
+  selector:'markdown-panel',
+  viewProviders:[Markdown],
+  styles:[
+    `.panel{width:auto;display:inline-block;border:1px solid black;}
+     .panel-title{border-bottom:1px solid black;background-color:#eee;}
+     .panel-content,.panel-title{padding:5px;}
+    `
+  ],
+  template:`
+    <div class="panel">
+      <div class="panel-title">
+        <ng-content select='panel-title'></ng-content>
+      </div>
+      <div class="panel-content">
+        <ng-content select="panel-content"></ng-content>
+      </div>
+    </div>
+  `
+})
+class MarkdownPanel implements AfterContentInit{
+  constructor(private el:ElementRef,private md:Markdown){}
+  ngAfterContentInit(){
+    let el=this.el.nativeElement;
+    let title=el.querySelector('panel-title');
+    let content=el.querySelector('panel-content');
+    title.innerHTML=this.md.toHTML(title.innerHTML);
+    content.innerHTML=this.md.toHTML(content.innerHTML);
+  }
+}
+
 @Component({
   selector:'app',
   templateUrl:'dist/swapp.html',
@@ -312,7 +364,7 @@ export class SwApp {
 @NgModule({
   imports:[BrowserModule,FormsModule],
   providers:[Overlay],
-  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab,TabsMain,TabContent,TabTitle,TodoApp],
+  declarations:[SwApp,Tooltip,TodoList,InputBox,Tabs,Tab,TabsMain,TabContent,TabTitle,TodoApp,MarkdownPanel,paneltitle,panelcontent],
   bootstrap:[SwApp]
 })
 export class SwAppModule{

@@ -12,6 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var markdown = require("markdown");
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var platform_browser_1 = require("@angular/platform-browser");
@@ -265,6 +266,64 @@ TabsMain = __decorate([
     }),
     __metadata("design:paramtypes", [])
 ], TabsMain);
+// markdown
+var Markdown = (function () {
+    function Markdown() {
+    }
+    Markdown.prototype.toHTML = function (md) {
+        return markdown.toHTML(md);
+    };
+    return Markdown;
+}());
+var paneltitle = (function () {
+    function paneltitle() {
+    }
+    return paneltitle;
+}());
+paneltitle = __decorate([
+    core_1.Component({
+        selector: 'panel-title',
+        template: '<ng-content></ng-content>'
+    }),
+    __metadata("design:paramtypes", [])
+], paneltitle);
+var panelcontent = (function () {
+    function panelcontent() {
+    }
+    return panelcontent;
+}());
+panelcontent = __decorate([
+    core_1.Component({
+        selector: 'panel-content',
+        template: '<ng-content></ng-content>'
+    }),
+    __metadata("design:paramtypes", [])
+], panelcontent);
+var MarkdownPanel = (function () {
+    function MarkdownPanel(el, md) {
+        this.el = el;
+        this.md = md;
+    }
+    MarkdownPanel.prototype.ngAfterContentInit = function () {
+        var el = this.el.nativeElement;
+        var title = el.querySelector('panel-title');
+        var content = el.querySelector('panel-content');
+        title.innerHTML = this.md.toHTML(title.innerHTML);
+        content.innerHTML = this.md.toHTML(content.innerHTML);
+    };
+    return MarkdownPanel;
+}());
+MarkdownPanel = __decorate([
+    core_1.Component({
+        selector: 'markdown-panel',
+        viewProviders: [Markdown],
+        styles: [
+            ".panel{width:auto;display:inline-block;border:1px solid black;}\n     .panel-title{border-bottom:1px solid black;background-color:#eee;}\n     .panel-content,.panel-title{padding:5px;}\n    "
+        ],
+        template: "\n    <div class=\"panel\">\n      <div class=\"panel-title\">\n        <ng-content select='panel-title'></ng-content>\n      </div>\n      <div class=\"panel-content\">\n        <ng-content select=\"panel-content\"></ng-content>\n      </div>\n    </div>\n  "
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef, Markdown])
+], MarkdownPanel);
 var SwApp = (function () {
     function SwApp() {
         this.isvalid = true;
@@ -318,7 +377,7 @@ SwAppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
         providers: [directive_1.Overlay],
-        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab, TabsMain, TabContent, TabTitle, TodoApp],
+        declarations: [SwApp, directive_1.Tooltip, TodoList, InputBox, Tabs, Tab, TabsMain, TabContent, TabTitle, TodoApp, MarkdownPanel, paneltitle, panelcontent],
         bootstrap: [SwApp]
     }),
     __metadata("design:paramtypes", [])
